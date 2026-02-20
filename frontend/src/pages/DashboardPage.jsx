@@ -11,6 +11,26 @@ import Navbar from '../components/Navbar';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
+const ALL_EXERCISES = {
+    squat: { label: 'Squats', icon: '🦵', sets: '3 × 15 reps', tip: 'Knee angle tracking' },
+    pushup: { label: 'Push-ups', icon: '💪', sets: '3 × 12 reps', tip: 'Elbow & alignment tracking' },
+    lunge: { label: 'Lunges', icon: '🏃', sets: '3 × 10 reps each side', tip: 'Front knee angle tracking' },
+};
+
+// Today's plan rotates daily so it feels fresh
+const getTodaysPlan = () => {
+    const plans = [
+        ['squat', 'pushup'],
+        ['lunge', 'squat'],
+        ['pushup', 'lunge'],
+        ['squat', 'pushup', 'lunge'],
+        ['lunge', 'pushup'],
+        ['squat', 'lunge'],
+        ['pushup', 'squat'],
+    ];
+    return plans[new Date().getDay()];
+};
+
 export default function DashboardPage() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -139,6 +159,56 @@ export default function DashboardPage() {
                         <div className="stat-label">Total Workouts</div>
                     </div>
                 </div>
+
+                {/* TODAY'S WORKOUT PLAN */}
+                {(() => {
+                    const todaysPlan = getTodaysPlan();
+                    return (
+                        <div className="today-plan-card">
+                            <div className="plan-header">
+                                <span className="plan-icon">📋</span>
+                                <h3>Today's Workout Plan</h3>
+                                <span className="plan-day">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+                            </div>
+                            <div className="plan-exercises">
+                                {todaysPlan.map((id, idx) => {
+                                    const ex = ALL_EXERCISES[id];
+                                    return (
+                                        <div key={id} className="plan-ex-row">
+                                            <span className="plan-ex-num">{idx + 1}</span>
+                                            <span className="plan-ex-icon">{ex.icon}</span>
+                                            <div className="plan-ex-info">
+                                                <strong>{ex.label}</strong>
+                                                <span>{ex.sets}</span>
+                                            </div>
+                                            <span className="plan-ex-tip">{ex.tip}</span>
+                                            <button className="plan-start-btn" onClick={() => navigate('/workout')}>
+                                                Start →
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <style>{`
+                                .today-plan-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(0,245,255,0.12); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
+                                .plan-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+                                .plan-icon { font-size: 20px; }
+                                .plan-header h3 { flex: 1; font-size: 16px; color: white; }
+                                .plan-day { font-size: 12px; color: #888; }
+                                .plan-exercises { display: flex; flex-direction: column; gap: 12px; }
+                                .plan-ex-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+                                .plan-ex-num { width: 24px; height: 24px; background: linear-gradient(135deg,#00f5ff,#7c3aed); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: white; flex-shrink: 0; }
+                                .plan-ex-icon { font-size: 20px; flex-shrink: 0; }
+                                .plan-ex-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+                                .plan-ex-info strong { font-size: 14px; color: white; }
+                                .plan-ex-info span { font-size: 12px; color: #888; }
+                                .plan-ex-tip { font-size: 11px; color: #00f5ff; background: rgba(0,245,255,0.08); padding: 4px 8px; border-radius: 6px; margin-right: 8px; white-space: nowrap; }
+                                .plan-start-btn { padding: 8px 16px; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.25); color: #00f5ff; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; white-space: nowrap; }
+                                .plan-start-btn:hover { background: rgba(0,245,255,0.2); }
+                            `}</style>
+                        </div>
+                    );
+                })()}
 
                 {/* Charts */}
                 {charts?.dates?.length > 0 ? (
