@@ -24,6 +24,7 @@ export default function Navbar() {
                 <Link to="/dashboard" className={isActive('/dashboard')}>📊 Dashboard</Link>
                 <Link to="/workout" className={isActive('/workout')}>🏋️ Workout</Link>
                 <Link to="/nutrition" className={isActive('/nutrition')}>🥗 Nutrition</Link>
+                <Link to="/profile" className={isActive('/profile')}>👤 Profile</Link>
             </div>
 
             <div className="nav-user">

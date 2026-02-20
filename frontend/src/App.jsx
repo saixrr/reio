@@ -5,6 +5,7 @@ import ProfileSetupPage from './pages/ProfileSetupPage';
 import DashboardPage from './pages/DashboardPage';
 import WorkoutPage from './pages/WorkoutPage';
 import NutritionPage from './pages/NutritionPage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -27,6 +28,9 @@ export default function App() {
         } />
         <Route path="/nutrition" element={
           <ProtectedRoute><NutritionPage /></ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute><ProfilePage /></ProtectedRoute>
         } />
 
         {/* Default redirect */}

@@ -104,11 +104,20 @@ exports.login = async (req, res) => {
 // PUT /api/auth/profile
 exports.updateProfile = async (req, res) => {
     try {
-        const { goal, dietType, budgetLevel } = req.body;
+        const {
+            goal, dietType, budgetLevel,
+            age, gender, height, weight,
+            fitnessLevel, occupationType, availableEquipment
+        } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { goal, dietType, budgetLevel, profileComplete: true },
+            {
+                goal, dietType, budgetLevel,
+                age, gender, height, weight,
+                fitnessLevel, occupationType, availableEquipment,
+                profileComplete: true
+            },
             { new: true, runValidators: true }
         );
 
@@ -122,6 +131,13 @@ exports.updateProfile = async (req, res) => {
                 goal: user.goal,
                 dietType: user.dietType,
                 budgetLevel: user.budgetLevel,
+                age: user.age,
+                gender: user.gender,
+                height: user.height,
+                weight: user.weight,
+                fitnessLevel: user.fitnessLevel,
+                occupationType: user.occupationType,
+                availableEquipment: user.availableEquipment,
                 profileComplete: user.profileComplete,
             },
         });

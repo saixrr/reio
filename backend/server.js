@@ -14,7 +14,7 @@ const app = express();
 
 // ── Middleware ────────────────────────────────────────────────
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'],
     credentials: true,
 }));
 app.use(express.json());
@@ -22,13 +22,18 @@ app.use(express.urlencoded({ extended: true }));
 
 // Diagnostic middleware
 app.use((req, res, next) => {
+    console.log(`📡 [${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
     if (req.method === 'POST') {
-        console.log(`📡 [${req.method}] ${req.url} | Body:`, req.body);
+        console.log('📦 Body:', JSON.stringify(req.body, null, 2));
     }
     next();
 });
 
 // ── Health Check ──────────────────────────────────────────────
+app.get('/', (req, res) => {
+    res.json({ success: true, message: 'Adaptive Fitness API 🏋️', documentation: '/api/health' });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'Adaptive Fitness API is running 🏋️', timestamp: new Date() });
 });
