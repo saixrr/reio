@@ -116,32 +116,27 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/adaptive_fitness";
 
-const startServer = async () => {
-  try {
-    await mongoose.connect(MONGO_URI);
-    console.log("✅ MongoDB connected successfully");
-  } catch (err) {
-    console.warn("⚠️ Local MongoDB connection failed, attempting to start in-memory database...");
-    try {
-      const { MongoMemoryServer } = require("mongodb-memory-server");
-      const mongod = await MongoMemoryServer.create();
-      const uri = mongod.getUri();
-      await mongoose.connect(uri);
-      console.log("✅ In-memory MongoDB started and connected");
-    } catch (memErr) {
-      console.error("❌ Failed to start in-memory MongoDB:", memErr.message);
+async function connectMongo() {
+  await mongoose.connect(MONGO_URI);
+  console.log("✅ MongoDB connected successfully");
+}
+
+// ✅ Only listen when running locally (not in Vercel serverless)
+if (process.env.VERCEL !== "1") {
+  connectMongo()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB connection failed:", err);
       process.exit(1);
-    }
-  }
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📡 API Base: http://localhost:${PORT}/api`);
-    console.log(`🔐 Allowed origins:`, allowedOrigins);
-    if (allowVercelPreview) console.log(`🔐 Vercel preview origins allowed`);
-  });
-};
-
-startServer();
+    });
+} else {
+  // On Vercel, we still need a DB connection per request (cached is better),
+  // but at least we don't call listen().
+  connectMongo().catch((err) => console.error("❌ MongoDB connection failed:", err));
+}
 
 module.exports = app;
