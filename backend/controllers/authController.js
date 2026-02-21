@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const connectDB = require("../lib/db");
 
 // Generate JWT Token
 const generateToken = (userId) => {
@@ -12,6 +13,7 @@ const generateToken = (userId) => {
 // POST /api/auth/signup
 exports.signup = async (req, res) => {
     try {
+        await connectDB();
         const { name, email, password, goal, dietType, budgetLevel } = req.body;
 
         if (!name || !email || !password) {
