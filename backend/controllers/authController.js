@@ -67,6 +67,7 @@ exports.signup = async (req, res) => {
 // POST /api/auth/login
 exports.login = async (req, res) => {
     try {
+        await connectDB();
         const { email, password } = req.body;
 
         if (!email || !password) {
